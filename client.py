@@ -143,8 +143,8 @@ class UDPClient:
 
 if __name__ == "__main__":
     client = UDPClient(
-        server_host='::1',  # IPv6 localhost
-        server_port=12345,
+        server_host='2600:1901:4010:945::',  # IPv6 host
+        server_port=2222,
         send_interval=100,  # 100ms between packets
         total_packets=500,  # Send 500 packets
         response_timeout=5,  # Wait 5 seconds after sending

@@ -116,5 +116,5 @@ class UDPServer:
             self.sock.close()
 
 if __name__ == "__main__":
-    server = UDPServer(timeout=30, host="::1")  # 30 seconds timeout
+    server = UDPServer(timeout=30, host="::1", port=2222)  # 30 seconds timeout
     server.start()
