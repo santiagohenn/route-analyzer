@@ -5,10 +5,12 @@ import random
 import string
 import os
 from datetime import datetime
+import argparse
+import configparser
 
 class UDPClient:
     def __init__(self, server_host='::1', server_port=12345,
-                 client_host='::1', client_port=0, 
+                 client_host='::', client_port=0, 
                  send_interval=1, total_packets=1000, 
                  response_timeout=10, random_length=10,
                  batch_size=100, max_lines=10000):
@@ -28,11 +30,17 @@ class UDPClient:
         self.lock = threading.Lock()
         self.running = True
         self.server_ack = False
-        
+
         # Create storage directory if it doesn't exist
         if not os.path.exists('client_responses'):
             os.makedirs('client_responses')
-    
+
+        # Create a single socket for both sending and receiving
+        self.sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        self.sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+        self.sock.bind((self.client_host, self.client_port))
+        self.client_port = self.sock.getsockname()[1]  # update to actual port
+
     def generate_random_string(self, length):
         return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
     
@@ -70,15 +78,10 @@ class UDPClient:
                 self.responses = []
     
     def listen_for_responses(self):
-
-        self.response_sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        self.response_sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
-        self.response_sock.bind((self.client_host, self.client_port))
-        
         try:
             while self.running:
                 try:
-                    data, _ = self.response_sock.recvfrom(1024)
+                    data, _ = self.sock.recvfrom(1024)
                     current_time = str(time.time_ns())
 
                     if not self.server_ack:
@@ -95,15 +98,10 @@ class UDPClient:
                     if self.running:
                         raise
         finally:
-            self.response_sock.close()
+            self.sock.close()
 
     def send_packets(self):
-
-        self.sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        self.sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
-        self.sock.bind(('::1', 0))
-
-        print(f"Client sending from port {self.sock.getsockname()[1]}")
+        print(f"Client sending from port {self.client_port}")
 
         try:
             for seq in range(1, self.total_packets + 1):
@@ -141,15 +139,57 @@ class UDPClient:
         # Start sending packets
         self.send_packets()
 
+def load_config(config_file, section):
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    cfg = {}
+    if section in config:
+        s = config[section]
+        if 'server_host' in s: cfg['server_host'] = s['server_host']
+        if 'server_port' in s: cfg['server_port'] = int(s['server_port'])
+        if 'send_interval' in s: cfg['send_interval'] = int(s['send_interval'])
+        if 'total_packets' in s: cfg['total_packets'] = int(s['total_packets'])
+        if 'response_timeout' in s: cfg['response_timeout'] = int(s['response_timeout'])
+        if 'random_length' in s: cfg['random_length'] = int(s['random_length'])
+        if 'batch_size' in s: cfg['batch_size'] = int(s['batch_size'])
+        if 'max_lines' in s: cfg['max_lines'] = int(s['max_lines'])
+    return cfg
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="UDP Client")
+    parser.add_argument('--config', type=str, help='Path to config file (INI format)')
+    parser.add_argument('--server-host', type=str, help='Server host/IP')
+    parser.add_argument('--server-port', type=int, help='Server port')
+    parser.add_argument('--send-interval', type=int, help='Interval between packets (ms)')
+    parser.add_argument('--total-packets', type=int, help='Total packets to send')
+    parser.add_argument('--response-timeout', type=int, help='Wait time for responses (s)')
+    parser.add_argument('--random-length', type=int, help='Random string length')
+    parser.add_argument('--batch-size', type=int, help='Batch size for saving responses')
+    parser.add_argument('--max-lines', type=int, help='Max lines per file')
+    args = parser.parse_args()
+
+    config = {}
+    if args.config:
+        config = load_config(args.config, 'client')
+
+    # Command-line args override config file
+    server_host = args.server_host or config.get('server_host', '::1')
+    server_port = args.server_port or config.get('server_port', 2222)
+    send_interval = args.send_interval or config.get('send_interval', 100)
+    total_packets = args.total_packets or config.get('total_packets', 500)
+    response_timeout = args.response_timeout or config.get('response_timeout', 5)
+    random_length = args.random_length or config.get('random_length', 20)
+    batch_size = args.batch_size or config.get('batch_size', 100)
+    max_lines = args.max_lines or config.get('max_lines', 10000)
+
     client = UDPClient(
-        server_host='2600:1901:4010:945::',  # IPv6 host
-        server_port=2222,
-        send_interval=100,  # 100ms between packets
-        total_packets=500,  # Send 500 packets
-        response_timeout=5,  # Wait 5 seconds after sending
-        random_length=20,    # 20 random chars
-        batch_size=100,      # Save every 100 responses
-        max_lines=10000      # 10,000 lines per file
+        server_host=server_host,
+        server_port=server_port,
+        send_interval=send_interval,
+        total_packets=total_packets,
+        response_timeout=response_timeout,
+        random_length=random_length,
+        batch_size=batch_size,
+        max_lines=max_lines
     )
     client.start()

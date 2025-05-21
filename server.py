@@ -3,6 +3,8 @@ import time
 import threading
 import os
 from datetime import datetime
+import argparse
+import configparser
 
 class UDPServer:
     def __init__(self, host='::', port=12345, timeout=30, batch_size=100, max_lines=10000):
@@ -13,7 +15,7 @@ class UDPServer:
         self.max_lines = max_lines
         self.packets = []
         self.file_counter = 1
-        self.last_received_time = time.time()
+        self.last_received_time = time.time_ns()
         self.lock = threading.Lock()
         self.running = True
         self.received_something = False
@@ -115,6 +117,45 @@ class UDPServer:
         finally:
             self.sock.close()
 
+def load_config(config_file):
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    cfg = {}
+    if 'server' in config:
+        s = config['server']
+        if 'host' in s: cfg['host'] = s['host']
+        if 'port' in s: cfg['port'] = int(s['port'])
+        if 'timeout' in s: cfg['timeout'] = int(s['timeout'])
+        if 'batch_size' in s: cfg['batch_size'] = int(s['batch_size'])
+        if 'max_lines' in s: cfg['max_lines'] = int(s['max_lines'])
+    return cfg
+
 if __name__ == "__main__":
-    server = UDPServer(timeout=30, host="::1", port=2222)  # 30 seconds timeout
+    parser = argparse.ArgumentParser(description="UDP Server")
+    parser.add_argument('--config', type=str, help='Path to config file (INI format)')
+    parser.add_argument('--host', type=str, help='Host/IP to bind')
+    parser.add_argument('--port', type=int, help='Port to bind')
+    parser.add_argument('--timeout', type=int, help='Timeout in seconds')
+    parser.add_argument('--batch-size', type=int, help='Batch size for saving packets')
+    parser.add_argument('--max-lines', type=int, help='Max lines per file')
+    args = parser.parse_args()
+
+    config = {}
+    if args.config:
+        config = load_config(args.config)
+
+    # Command-line args override config file
+    host = args.host or config.get('host', '::')
+    port = args.port or config.get('port', 2222)
+    timeout = args.timeout or config.get('timeout', 60)
+    batch_size = args.batch_size or config.get('batch_size', 100)
+    max_lines = args.max_lines or config.get('max_lines', 10000)
+
+    server = UDPServer(
+        host=host,
+        port=port,
+        timeout=timeout,
+        batch_size=batch_size,
+        max_lines=max_lines
+    )
     server.start()
