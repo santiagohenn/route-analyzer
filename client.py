@@ -175,7 +175,7 @@ if __name__ == "__main__":
     # Command-line args override config file
     server_host = args.server_host or config.get('server_host', '::1')
     server_port = args.server_port or config.get('server_port', 2222)
-    send_interval = args.send_interval or config.get('send_interval', 100)
+    send_interval = args.send_interval or config.get('send_interval_ms', 100)
     total_packets = args.total_packets or config.get('total_packets', 500)
     response_timeout = args.response_timeout or config.get('response_timeout', 5)
     random_length = args.random_length or config.get('random_length', 20)
