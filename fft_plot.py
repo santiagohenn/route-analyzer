@@ -42,7 +42,7 @@ def main():
 
     # Interpolate to regular time intervals for FFT
     t_min, t_max = min(time), max(time)
-    print("time interval: ", t_max - t_min)
+    # print("time interval: ", t_max - t_min)
     num_points = len(time)
     regular_time = np.linspace(t_min, t_max, num_points)
     interpolated_signal = np.interp(regular_time, time, signal_1)
@@ -74,9 +74,7 @@ def main():
     plt.title("FFT Spectrum of Latencies")
     plt.xlim(freq_min, freq_max)
     plt.grid(True, linestyle='--', alpha=0.5)
-    #plt.axvline(1/15, color='darkblue', linestyle='--', linewidth=2, alpha=0.2)  # Expected component at 1/15 Hz
-    #plt.axvline(2/15, color='darkblue', linestyle='--', linewidth=2, alpha=0.2)  # Expected component at 2/15 Hz
-    #plt.axvline(3/15, color='darkblue', linestyle='--', linewidth=2, alpha=0.2)  # Expected component at 3/15 Hz
+    #[plt.axvline(i/15, color='darkblue', linestyle='--', linewidth=2, alpha=0.15) for i in range(1, 6)]
     plt.tight_layout()
     plt.show()
 
