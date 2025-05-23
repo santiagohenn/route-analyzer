@@ -2,3 +2,6 @@
 *.log
 client_responses
 server_packets
+results_client/*
+results_server/*
+time_logs/*

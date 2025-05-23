@@ -21,8 +21,8 @@ class UDPServer:
         self.received_something = False
         
         # Create storage directory if it doesn't exist
-        if not os.path.exists('server_packets'):
-            os.makedirs('server_packets')
+        if not os.path.exists('results_server'):
+            os.makedirs('results_server')
         
         # Start timeout checker
         threading.Thread(target=self.check_timeout, daemon=True).start()
@@ -42,7 +42,7 @@ class UDPServer:
                 return
                 
             if force or len(self.packets) >= self.batch_size:
-                filename = f'server_packets/packets_{self.file_counter}.txt'
+                filename = f'results_server/packets_{self.file_counter}.txt'
                 line_count = 0
                 
                 # Check if current file exists and count lines
@@ -54,11 +54,11 @@ class UDPServer:
                 if line_count + len(self.packets) > self.max_lines:
                     remaining_space = self.max_lines - line_count
                     self.file_counter += 1
-                    filename = f'server_packets/packets_{self.file_counter}.txt'
+                    filename = f'results_server/packets_{self.file_counter}.txt'
                     
                     # Save remaining packets that fit in current file
                     if remaining_space > 0:
-                        with open(f'server_packets/packets_{self.file_counter-1}.txt', 'a') as f:
+                        with open(f'results_server/packets_{self.file_counter-1}.txt', 'a') as f:
                             for packet in self.packets[:remaining_space]:
                                 f.write(packet + '\n')
                         self.packets = self.packets[remaining_space:]

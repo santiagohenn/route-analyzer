@@ -43,8 +43,8 @@ def main():
             received_minus_bounce.append((received_ts - bounce_ts) / 1e6)
 
     plt.figure(figsize=(10, 6))
-    plt.plot(sequence, bounce_minus_start, label='Lab -> SL -> Server')
-    # plt.plot(sequence, received_minus_bounce, label='Server -> SL -> Lab')
+    plt.plot(sequence, bounce_minus_start, label='Lab -> SL -> Server', alpha=0.5, marker='o', markersize=2)
+    # plt.plot(sequence, received_minus_bounce, label='Server -> SL -> Lab', alpha=0.5, marker='o', markersize=2)
     plt.xlabel('Time')
     plt.ylabel('Latency [ms]')
     plt.title('')

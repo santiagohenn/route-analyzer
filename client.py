@@ -32,8 +32,8 @@ class UDPClient:
         self.server_ack = False
 
         # Create storage directory if it doesn't exist
-        if not os.path.exists('client_responses'):
-            os.makedirs('client_responses')
+        if not os.path.exists('results_client'):
+            os.makedirs('results_client')
 
         # Create a single socket for both sending and receiving
         self.sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
@@ -50,7 +50,7 @@ class UDPClient:
                 return
                 
             if force or len(self.responses) >= self.batch_size:
-                filename = f'client_responses/responses_{self.file_counter}.txt'
+                filename = f'results_client/responses_{self.file_counter}.txt'
                 line_count = 0
                 
                 # Check if current file exists and count lines
@@ -62,11 +62,11 @@ class UDPClient:
                 if line_count + len(self.responses) > self.max_lines:
                     remaining_space = self.max_lines - line_count
                     self.file_counter += 1
-                    filename = f'client_responses/responses_{self.file_counter}.txt'
+                    filename = f'results_client/responses_{self.file_counter}.txt'
                     
                     # Save remaining responses that fit in current file
                     if remaining_space > 0:
-                        with open(f'client_responses/responses_{self.file_counter-1}.txt', 'a') as f:
+                        with open(f'results_client/responses_{self.file_counter-1}.txt', 'a') as f:
                             for response in self.responses[:remaining_space]:
                                 f.write(response + '\n')
                         self.responses = self.responses[remaining_space:]
