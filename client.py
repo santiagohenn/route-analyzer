@@ -11,7 +11,7 @@ import configparser
 class UDPClient:
     def __init__(self, server_host='::1', server_port=12345,
                  client_host='::', client_port=0, 
-                 send_interval=1, total_packets=1000, 
+                 send_interval=1000, total_packets=1000, 
                  response_timeout=10, random_length=10,
                  batch_size=100, max_lines=10000):
         self.server_host = server_host
@@ -147,7 +147,7 @@ def load_config(config_file, section):
         s = config[section]
         if 'server_host' in s: cfg['server_host'] = s['server_host']
         if 'server_port' in s: cfg['server_port'] = int(s['server_port'])
-        if 'send_interval' in s: cfg['send_interval'] = int(s['send_interval'])
+        if 'send_interval_ms' in s: cfg['send_interval_ms'] = int(s['send_interval_ms'])
         if 'total_packets' in s: cfg['total_packets'] = int(s['total_packets'])
         if 'response_timeout' in s: cfg['response_timeout'] = int(s['response_timeout'])
         if 'random_length' in s: cfg['random_length'] = int(s['random_length'])
