@@ -66,6 +66,8 @@ python3 client.py --config config.ini
 
 Sync the system clock, run the script, sync again and log the clock metrics. If you need to be really precise with time keeping, you'll have the metrics to compensate the clock if needed (not implemented).
 
+For Linux:
+
 ```bash
 #!/bin/bash
 
@@ -80,10 +82,13 @@ python3 server.py --config config.ini
 # chronyc tracking > time_logs/chronyc_tracking_$(date +%Y%m%d_%H%M%S).log
 ```
 
+For Windows, [Meinberg](https://www.meinbergglobal.com/english/sw/ntp.htm) gives you precise time synchronization.
+
 Make the bash executable:
 
 ```bash
 chmod +x run_server.sh
+chmod +x run_client.sh
 ```
 
 Run server:
@@ -93,7 +98,7 @@ Run server:
 ```
 
 
-Run client:
+Run client (bash is analogous to the server):
 ```bash
 ./run_client.sh
 ```
