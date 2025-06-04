@@ -30,6 +30,7 @@ class UDPClient:
         self.lock = threading.Lock()
         self.running = True
         self.server_ack = False
+        self.first_run = True
 
         # Create storage directory if it doesn't exist
         if not os.path.exists('results_client'):
@@ -48,6 +49,14 @@ class UDPClient:
         with self.lock:
             if not self.responses:
                 return
+            
+            # If first run, start a new file
+            if self.first_run:
+                self.first_run = False;
+                filename = f'results_client/responses_{self.file_counter}.txt'
+                while os.path.exists(filename):
+                    self.file_counter += 1
+                    filename = f'results_client/responses_{self.file_counter}.txt'
                 
             if force or len(self.responses) >= self.batch_size:
                 filename = f'results_client/responses_{self.file_counter}.txt'
@@ -58,7 +67,7 @@ class UDPClient:
                     with open(filename, 'r') as f:
                         line_count = sum(1 for _ in f)
                 
-                # If current file would exceed max_lines, create new file
+                # If current file would exceed max_lines or its the first run, create new file
                 if line_count + len(self.responses) > self.max_lines:
                     remaining_space = self.max_lines - line_count
                     self.file_counter += 1
