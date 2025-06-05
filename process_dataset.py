@@ -10,12 +10,13 @@ def process_file(filename):
     else:
         input_file_path = os.path.join(input_folder, filename)
     base_filename = filename.replace(".txt", "")
-    processed_filename = os.path.join(output_folder, base_filename + "_processed.csv")
+    processed_filename = os.path.join(output_folder, base_filename + "_ts.csv")
 
     sequence = []
-    packet_sent_at = []
-    bounce_minus_start = []
-    received_minus_bounce = []
+    sender_relative_time = []
+    receiver_relative_time = []
+    sender_to_receiver_latency = []
+    receiver_to_sender_latency = []
     experiment_starts_at = 0
 
     with open(input_file_path, 'r') as f:
@@ -39,14 +40,15 @@ def process_file(filename):
             received_ts = float(parts[4])
 
             sequence.append(seq)
-            packet_sent_at.append(start_ts / 1e6)
-            bounce_minus_start.append((bounce_ts - start_ts) / 1e6)
-            received_minus_bounce.append((received_ts - bounce_ts) / 1e6)
+            sender_relative_time.append((start_ts - experiment_starts_at) / 1e6)
+            receiver_relative_time.append((bounce_ts - experiment_starts_at) / 1e6)
+            sender_to_receiver_latency.append((bounce_ts - start_ts) / 1e6)
+            receiver_to_sender_latency.append((received_ts - bounce_ts) / 1e6)
 
     with open(processed_filename, 'w') as f:
-        f.write("sequence,sent_at,sender_to_receiver,receiver_to_sender\n")
-        for seq, psa, bms, rmb in zip(sequence, packet_sent_at, bounce_minus_start, received_minus_bounce):
-            f.write(f"{seq},{psa},{bms},{rmb}\n")
+        f.write("sequence,sent_at,response_at,sender_to_receiver,receiver_to_sender\n")
+        for seq, sent, res, bms, rmb in zip(sequence, sender_relative_time, receiver_relative_time, sender_to_receiver_latency, receiver_to_sender_latency):
+            f.write(f"{seq},{sent},{res},{bms},{rmb}\n")
 
     print(f"Processed file saved to {processed_filename}")
 

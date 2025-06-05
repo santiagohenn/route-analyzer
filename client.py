@@ -117,8 +117,10 @@ class UDPClient:
                 if not self.running:
                     break
                     
-                current_time = str(time.time_ns())
                 random_str = self.generate_random_string(self.random_length)
+
+                # Get time just before assembling the packet
+                current_time = str(time.time_ns())
                 payload = f"{seq}|{current_time}|{random_str}"
                 
                 self.sock.sendto(payload.encode('utf-8'), (self.server_host, self.server_port))
