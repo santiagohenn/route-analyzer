@@ -30,7 +30,7 @@ class UDPServer:
     def check_timeout(self):
         while self.running:
             if time.time() - self.last_received_time > self.timeout:
-                print("Timeout exit")
+                print("Timeout exit [ I heard no one in a while :( ]")
                 self.save_packets(force=True)
                 self.running = False
                 os._exit(0)

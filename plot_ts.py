@@ -7,13 +7,13 @@ def main():
     if len(sys.argv) > 1:
         filename = sys.argv[1]
     else:
-        filename = input("Enter filename: ")
+        filename = input("Enter experiment: ")
 
     processed_filename = os.path.join("time_series", filename + "_processed.csv")
 
     sequence = []
-    bounce_minus_start = []
-    received_minus_bounce = []
+    sender_to_receiver = []
+    receiver_to_sender = []
 
     with open(processed_filename, 'r') as f:
         for line in f:
@@ -24,13 +24,13 @@ def main():
             if len(parts) < 3:
                 continue  # skip malformed lines
 
-            sequence.append(float(parts[0]))
-            bounce_minus_start.append(float(parts[1]))
-            received_minus_bounce.append(float(parts[2]))
+            sequence.append(float(parts[0])) # Replace with absolute time
+            sender_to_receiver.append(float(parts[2]))
+            receiver_to_sender.append(float(parts[3]))
 
     plt.figure(figsize=(10, 6))
-    plt.plot(sequence, bounce_minus_start, label='Lab -> SL -> Server', alpha=0.5, marker='o', markersize=2)
-    plt.plot(sequence, received_minus_bounce, label='Server -> SL -> Lab', alpha=0.5, marker='o', markersize=2)
+    plt.plot(sequence, sender_to_receiver, label='Lab -> SL -> Server', alpha=0.5, marker='o', markersize=2)
+    plt.plot(sequence, receiver_to_sender, label='Server -> SL -> Lab', alpha=0.5, marker='o', markersize=2)
     plt.xlabel('Time')
     plt.ylabel('Latency [ms]')
     plt.title('Processed Latency Data')
