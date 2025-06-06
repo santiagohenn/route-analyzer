@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project provides a UDP-based client and server for network route analysis, with configurable parameters via a shared `config.ini` file. The client sends timestamped packets to the server, which echoes them back, enabling latency and jitter analysis.
+This project provides a UDP-based client and server for network route analysis, with configurable parameters via a shared `config.ini` file. The client sends timestamped packets to the server, which timestamps them with the reception time and echoes them back, enabling latency and jitter analysis.
 
 ---
 
@@ -37,6 +37,42 @@ random_length = 20
 batch_size = 100
 max_lines = 10000
 ```
+
+---
+
+## Packet morphology
+
+
+
+You can use LaTeX (via MathJax) in Markdown for better illustration, especially on platforms that support it (like GitHub or Jupyter). Here’s a rewritten section using LaTeX to describe the packet variables:
+
+---
+
+## Packet morphology
+
+Each packet contains the following fields:
+
+| Field                       | Description                                 |
+|-----------------------------|---------------------------------------------|
+| $\text{Seq. N}^\circ$       | Sequence number of the packet               |
+| $t_\text{client,send}$      | Timestamp when client sends the packet      |
+| $\text{Payload}$            | Random or user-defined data                 |
+| $t_\text{server,recv}$      | Timestamp when server receives the packet   |
+| $t_\text{client,recv}$      | Timestamp when client receives the response |
+
+Separated with "|" characters:
+
+$$
+\left|
+    \text{Seq. N}^\circ| 
+    t_\text{client,send}| 
+    \text{Payload}| 
+    t_\text{server,recv}| 
+    t_\text{client,recv}
+\right|
+$$
+
+All timestamps are in nanoseconds. 
 
 ---
 
@@ -84,7 +120,7 @@ python3 server.py --config config.ini
 
 For Windows, [Meinberg](https://www.meinbergglobal.com/english/sw/ntp.htm) gives you precise time synchronization.
 
-Make the bash executable:
+Make the bash files executable:
 
 ```bash
 chmod +x run_server.sh
@@ -132,6 +168,6 @@ Type --help as arg on server/client to get information on configurations. These 
 
 ## Plotting and Analysis
 
-See `plot.py` and `fft_plot.py` for scripts to analyze and visualize the collected data.
+I made some simple `plot.py` and `fft_plot.py` scripts to analyze and visualize the collected data.
 
 ---

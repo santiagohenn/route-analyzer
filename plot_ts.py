@@ -12,10 +12,10 @@ def main():
     if filename.endswith(".txt"):
         filename = filename[:-4]
     
-    if "responses" not in filename:
-        filename = "responses_" + filename
+    if "exp" not in filename:
+        filename = "exp_" + filename
 
-    processed_filename = os.path.join("time_series", filename + "_ts.csv")
+    processed_filename = os.path.join("time_series", filename + ".csv")
 
     sender_sent_at_relative = []
     receiver_sent_at_relative = []
@@ -41,7 +41,7 @@ def main():
 
     plt.figure(figsize=(10, 6))
     plt.plot(sender_sent_at_relative, sender_to_receiver, label='Lab -> SL -> Server', alpha=0.5, marker='o', markersize=2)
-    # plt.plot(receiver_sent_at_relative, receiver_to_sender, label='Server -> SL -> Lab', alpha=0.5, marker='o', markersize=2)
+    plt.plot(receiver_sent_at_relative, receiver_to_sender, label='Server -> SL -> Lab', alpha=0.5, marker='o', markersize=2)
     plt.xlabel('Time [s]')
     plt.ylabel('Latency [ms]')
     plt.title('Processed Latency Data')

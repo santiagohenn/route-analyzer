@@ -10,7 +10,7 @@ def process_file(filename):
     else:
         input_file_path = os.path.join(input_folder, filename)
     base_filename = filename.replace(".txt", "")
-    processed_filename = os.path.join(output_folder, base_filename + "_ts.csv")
+    processed_filename = os.path.join(output_folder, base_filename + ".csv")
 
     sequence = []
     sender_relative_time = []

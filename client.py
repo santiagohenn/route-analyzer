@@ -53,13 +53,13 @@ class UDPClient:
             # If first run, start a new file
             if self.first_run:
                 self.first_run = False;
-                filename = f'results_client/responses_{self.file_counter}.txt'
+                filename = f'results_client/exp_{self.file_counter}.txt'
                 while os.path.exists(filename):
                     self.file_counter += 1
-                    filename = f'results_client/responses_{self.file_counter}.txt'
+                    filename = f'results_client/exp_{self.file_counter}.txt'
                 
             if force or len(self.responses) >= self.batch_size:
-                filename = f'results_client/responses_{self.file_counter}.txt'
+                filename = f'results_client/exp_{self.file_counter}.txt'
                 line_count = 0
                 
                 # Check if current file exists and count lines
@@ -71,11 +71,11 @@ class UDPClient:
                 if line_count + len(self.responses) > self.max_lines:
                     remaining_space = self.max_lines - line_count
                     self.file_counter += 1
-                    filename = f'results_client/responses_{self.file_counter}.txt'
+                    filename = f'results_client/exp_{self.file_counter}.txt'
                     
                     # Save remaining responses that fit in current file
                     if remaining_space > 0:
-                        with open(f'results_client/responses_{self.file_counter-1}.txt', 'a') as f:
+                        with open(f'results_client/exp_{self.file_counter-1}.txt', 'a') as f:
                             for response in self.responses[:remaining_space]:
                                 f.write(response + '\n')
                         self.responses = self.responses[remaining_space:]
