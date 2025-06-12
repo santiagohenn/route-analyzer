@@ -5,17 +5,13 @@ import matplotlib.pyplot as plt
 def main():
     # Get filename from user input or command line
     if len(sys.argv) > 1:
-        filename = sys.argv[1]
+        exp_number = sys.argv[1]
     else:
-        filename = input("Enter experiment: ")
+        exp_number = input("Enter experiment number: ")
 
-    if filename.endswith(".csv"):
-        filename = filename[:-4]
-    
-    if "series" not in filename:
-        filename = "series_" + filename
+    filename = f"series_{exp_number}_processed.csv"
 
-    processed_filename = os.path.join("time_series", filename + ".csv")
+    processed_filename = os.path.join("results_client", "exp_" + exp_number , filename)
 
     sender_sent_at_relative = []
     receiver_sent_at_relative = []

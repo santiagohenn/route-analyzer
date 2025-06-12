@@ -8,15 +8,13 @@ def process_file(exp_number):
     filename = "series_" + exp_number
 
     if not filename.endswith(".csv"):
-        input_file_path = os.path.join(input_folder, filename + ".csv")
-    else:
-        input_file_path = os.path.join(input_folder, filename)
+        filename += ".csv"
         
-    input_file_path = os.path.join("exp_", exp_number, input_file_path)
+    input_file_path = os.path.join(input_folder, "exp_" + exp_number, filename)
 
     processed_filename = os.path.join(
         os.path.dirname(input_file_path),
-        f"{filename}_processed.csv"
+        f"series_{exp_number}_processed.csv"
     )
 
     sequence = []
@@ -36,7 +34,7 @@ def process_file(exp_number):
             line = line.strip()
             if not line or line.startswith('sequence'):
                 continue
-            parts = line.split('|')
+            parts = line.split(',')
             if len(parts) < 5:
                 continue
 
