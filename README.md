@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project provides a UDP-based client and server for network route analysis, with configurable parameters via a shared `config.ini` file. The client sends timestamped packets to the server, which timestamps them with the reception time and echoes them back, enabling latency and jitter analysis.
+This project provides a UDP-based client and server for network route analysis, with configurable parameters via a shared `config.ini` file. The client sends timestamped packets to the server, who upon receiving them, timestamps them with the reception time and echoes them back, enabling latency and jitter analysis.
 
 ---
 
@@ -17,7 +17,7 @@ This project provides a UDP-based client and server for network route analysis, 
 
 ## Configuration
 
-Edit `config.ini` to set parameters for both server and client. Only relevant options will be pulled by the scripts. Example:
+Edit `config.ini` to set parameters for both server and client. Only relevant options will be pulled by the scripts (server only looks at server configs and likewise for the client). Example:
 
 ```ini
 [server]
@@ -37,14 +37,6 @@ random_length = 20
 batch_size = 100
 max_lines = 10000
 ```
-
----
-
-## Packet morphology
-
-
-
-You can use LaTeX (via MathJax) in Markdown for better illustration, especially on platforms that support it (like GitHub or Jupyter). Here’s a rewritten section using LaTeX to describe the packet variables:
 
 ---
 
@@ -73,6 +65,8 @@ $$
 $$
 
 All timestamps are in nanoseconds. 
+
+[UPDATE] Packets are still sent as pipe separated values, but on the client side they're now stored in .csv format.
 
 ---
 
@@ -168,6 +162,15 @@ Type --help as arg on server/client to get information on configurations. These 
 
 ## Plotting and Analysis
 
-I made some simple `plot.py` and `fft_plot.py` scripts to analyze and visualize the collected data.
+I made some simple `plot_ts.py` and `plot_fft.py` scripts to analyze and visualize the collected data. Run `process_dataset.py` before plotting to transform the packets .csv files into .csv time series:
 
+```bash
+python process_dataset.py <EXPERIMENT_NUMBER>
+```
+
+---
+
+## TODO
+
+- Send uint64 values for the timestamps, rather than char arrays.
 ---
