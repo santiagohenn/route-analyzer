@@ -4,6 +4,8 @@ import threading
 import random
 import string
 import os
+import re
+import json
 from datetime import datetime
 import argparse
 import configparser
@@ -33,8 +35,32 @@ class UDPClient:
         self.first_run = True
 
         # Create storage directory if it doesn't exist
-        if not os.path.exists('results_client'):
-            os.makedirs('results_client')
+        base_dir = 'results_client'
+        if not os.path.exists(base_dir):
+            os.makedirs(base_dir)
+
+        # Find next experiment number
+        exp_dirs = [d for d in os.listdir(base_dir) if re.match(r'exp_\d+$', d)]
+        exp_nums = [int(d.split('_')[1]) for d in exp_dirs]
+        next_exp = max(exp_nums, default=0) + 1
+        self.exp_dir = os.path.join(base_dir, f'exp_{next_exp}')
+        os.makedirs(self.exp_dir)
+
+        # Log client configuration to JSON
+        config_dict = {
+            "server_host": self.server_host,
+            "server_port": self.server_port,
+            "client_host": self.client_host,
+            "client_port": self.client_port,
+            "send_interval_ms": int(send_interval),
+            "total_packets": self.total_packets,
+            "response_timeout": self.response_timeout,
+            "random_length": self.random_length,
+            "batch_size": self.batch_size,
+            "max_lines": self.max_lines
+        }
+        with open(os.path.join(self.exp_dir, "client_config.json"), "w") as f:
+            json.dump(config_dict, f, indent=4)
 
         # Create a single socket for both sending and receiving
         self.sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
@@ -53,13 +79,13 @@ class UDPClient:
             # If first run, start a new file
             if self.first_run:
                 self.first_run = False;
-                filename = f'results_client/exp_{self.file_counter}.txt'
+                filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.txt')
                 while os.path.exists(filename):
                     self.file_counter += 1
-                    filename = f'results_client/exp_{self.file_counter}.txt'
+                    filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.txt')
                 
             if force or len(self.responses) >= self.batch_size:
-                filename = f'results_client/exp_{self.file_counter}.txt'
+                filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.txt')
                 line_count = 0
                 
                 # Check if current file exists and count lines
@@ -71,11 +97,11 @@ class UDPClient:
                 if line_count + len(self.responses) > self.max_lines:
                     remaining_space = self.max_lines - line_count
                     self.file_counter += 1
-                    filename = f'results_client/exp_{self.file_counter}.txt'
+                    filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.txt')
                     
                     # Save remaining responses that fit in current file
                     if remaining_space > 0:
-                        with open(f'results_client/exp_{self.file_counter-1}.txt', 'a') as f:
+                        with open(os.path.join(self.exp_dir, f'series_{self.file_counter-1}.txt'), 'a') as f:
                             for response in self.responses[:remaining_space]:
                                 f.write(response + '\n')
                         self.responses = self.responses[remaining_space:]

@@ -12,8 +12,8 @@ def main():
     if filename.endswith(".txt"):
         filename = filename[:-4]
     
-    if "exp" not in filename:
-        filename = "exp_" + filename
+    if "series" not in filename:
+        filename = "series_" + filename
 
     processed_filename = os.path.join("time_series", filename + ".csv")
 
