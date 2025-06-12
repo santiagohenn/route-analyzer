@@ -47,7 +47,7 @@ class UDPClient:
         os.makedirs(self.exp_dir)
 
         # Log client configuration to JSON
-        config_dict = {
+        self.config_dict = {
             "server_host": self.server_host,
             "server_port": self.server_port,
             "client_host": self.client_host,
@@ -57,10 +57,12 @@ class UDPClient:
             "response_timeout": self.response_timeout,
             "random_length": self.random_length,
             "batch_size": self.batch_size,
-            "max_lines": self.max_lines
+            "max_lines": self.max_lines,
+            "experiment_starts": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-        with open(os.path.join(self.exp_dir, "client_config.json"), "w") as f:
-            json.dump(config_dict, f, indent=4)
+        self.config_path = os.path.join(self.exp_dir, "client_config.json")
+        with open(self.config_path, "w") as f:
+            json.dump(self.config_dict, f, indent=4)
 
         # Create a single socket for both sending and receiving
         self.sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
@@ -78,14 +80,14 @@ class UDPClient:
             
             # If first run, start a new file
             if self.first_run:
-                self.first_run = False;
-                filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.txt')
+                self.first_run = False
+                filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.csv')
                 while os.path.exists(filename):
                     self.file_counter += 1
-                    filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.txt')
+                    filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.csv')
                 
             if force or len(self.responses) >= self.batch_size:
-                filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.txt')
+                filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.csv')
                 line_count = 0
                 
                 # Check if current file exists and count lines
@@ -97,11 +99,11 @@ class UDPClient:
                 if line_count + len(self.responses) > self.max_lines:
                     remaining_space = self.max_lines - line_count
                     self.file_counter += 1
-                    filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.txt')
+                    filename = os.path.join(self.exp_dir, f'series_{self.file_counter}.csv')
                     
                     # Save remaining responses that fit in current file
                     if remaining_space > 0:
-                        with open(os.path.join(self.exp_dir, f'series_{self.file_counter-1}.txt'), 'a') as f:
+                        with open(os.path.join(self.exp_dir, f'series_{self.file_counter-1}.csv'), 'a') as f:
                             for response in self.responses[:remaining_space]:
                                 f.write(response + '\n')
                         self.responses = self.responses[remaining_space:]
@@ -124,6 +126,7 @@ class UDPClient:
                         print("Server responses incoming ... ")
 
                     modified_data = f"{data.decode('utf-8')}|{current_time}"
+                    modified_data = modified_data.replace('|', ",")  # Replace '|' with ',' for CSV format
                     
                     with self.lock:
                         self.responses.append(modified_data)
@@ -162,6 +165,10 @@ class UDPClient:
             time.sleep(self.response_timeout)
             self.running = False
             self.save_responses(force=True)
+            # Log experiment end time
+            self.config_dict["experiment_ends"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            with open(self.config_path, "w") as f:
+                json.dump(self.config_dict, f, indent=4)
             print("Client finished.")
         finally:
             self.sock.close()

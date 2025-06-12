@@ -1,16 +1,23 @@
 import os
 import sys
 
-def process_file(filename):
-    input_folder = "results_client"
-    output_folder = "time_series"
-    os.makedirs(output_folder, exist_ok=True)
-    if not filename.endswith(".txt"):
-        input_file_path = os.path.join(input_folder, filename + ".txt")
+input_folder = "results_client"
+
+def process_file(exp_number):
+    
+    filename = "series_" + exp_number
+
+    if not filename.endswith(".csv"):
+        input_file_path = os.path.join(input_folder, filename + ".csv")
     else:
         input_file_path = os.path.join(input_folder, filename)
-    base_filename = filename.replace(".txt", "")
-    processed_filename = os.path.join(output_folder, base_filename + ".csv")
+        
+    input_file_path = os.path.join("exp_", exp_number, input_file_path)
+
+    processed_filename = os.path.join(
+        os.path.dirname(input_file_path),
+        f"{filename}_processed.csv"
+    )
 
     sequence = []
     sender_relative_time = []
@@ -22,8 +29,7 @@ def process_file(filename):
     with open(input_file_path, 'r') as f:
         lines = f.readlines()
         if len(lines) > 0:
-            # TODO : for absolute time, use the first line's timestamp
-            experiment_starts_at = float(lines[0].split('|')[1])
+            experiment_starts_at = float(lines[0].split(',')[1])
         f.seek(0)
 
         for line in f:
@@ -54,7 +60,7 @@ def process_file(filename):
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        filename = sys.argv[1]
+        exp_number = sys.argv[1]
     else:
-        filename = input("Enter raw data filename: ")
-    process_file(filename)
+        exp_number = input("Enter experiment number: ")
+    process_file(exp_number)

@@ -9,7 +9,7 @@ def main():
     else:
         filename = input("Enter experiment: ")
 
-    if filename.endswith(".txt"):
+    if filename.endswith(".csv"):
         filename = filename[:-4]
     
     if "series" not in filename:
