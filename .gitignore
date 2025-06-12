@@ -7,3 +7,4 @@ results_server/*
 time_logs/*
 time_series/*
 .venv
+keys

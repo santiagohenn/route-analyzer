@@ -19,6 +19,7 @@ class UDPServer:
         self.lock = threading.Lock()
         self.running = True
         self.received_something = False
+        self.total_packets = 0
         
         # Create storage directory if it doesn't exist
         if not os.path.exists('results_server'):
@@ -42,6 +43,9 @@ class UDPServer:
                 return
                 
             if force or len(self.packets) >= self.batch_size:
+
+                print("Still receiving packets. Current packet count:", self.total_packets)
+
                 filename = f'results_server/packets_{self.file_counter}.txt'
                 line_count = 0
                 
@@ -49,6 +53,7 @@ class UDPServer:
                 if os.path.exists(filename):
                     with open(filename, 'r') as f:
                         line_count = sum(1 for _ in f)
+
                 
                 # If current file would exceed max_lines, create new file
                 if line_count + len(self.packets) > self.max_lines:
@@ -73,6 +78,9 @@ class UDPServer:
 
         # First of all clock the time
         current_time = str(time.time_ns())
+
+        # Increment total packets count
+        self.total_packets += 1
 
         # addr is a tuple: (host, port, flowinfo, scopeid)
         client_host = addr[0]
