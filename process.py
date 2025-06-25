@@ -3,9 +3,9 @@ import sys
 
 input_folder = "results_client"
 
-def process_file(exp_number):
+def process_file(exp_number, series_number):
     
-    filename = "series_" + exp_number
+    filename = "series_" + series_number
 
     if not filename.endswith(".csv"):
         filename += ".csv"
@@ -14,7 +14,7 @@ def process_file(exp_number):
 
     processed_filename = os.path.join(
         os.path.dirname(input_file_path),
-        f"series_{exp_number}_processed.csv"
+        f"series_{series_number}_processed.csv"
     )
 
     sequence = []
@@ -57,8 +57,13 @@ def process_file(exp_number):
     print(f"Processed file saved to {processed_filename}")
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
+    series_number = "1"
+    if len(sys.argv) == 2:
         exp_number = sys.argv[1]
+    elif len(sys.argv) == 3:
+        exp_number = sys.argv[1]
+        series_number = sys.argv[2]
     else:
-        exp_number = input("Enter experiment number: ")
-    process_file(exp_number)
+        exp_number = input("Enter experiment number: ").strip()
+        series_number = input("Enter series number: ").strip()
+    process_file(exp_number, str(series_number))

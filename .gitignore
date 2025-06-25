@@ -8,3 +8,5 @@ time_logs/*
 time_series/*
 .venv
 keys
+useful_scripts.MD
+junk
