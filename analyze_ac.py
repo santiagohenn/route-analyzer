@@ -71,6 +71,7 @@ if stacked.shape[0] == 0:
 
 mean_stacked = np.mean(stacked, axis=0)
 std_stacked = np.std(stacked, axis=0)
+max_stacked = np.max(stacked, axis=0)
 center_time = (np.arange(-W, W+1)) * np.median(np.diff(t))
 
 # Ensure lengths match before plotting
@@ -82,6 +83,7 @@ plt.figure(figsize=(10, 5))
 # plt.axvline(0, color='orange', linestyle='--', alpha=0.7, linewidth=2, label='Peak center')
 plt.plot(center_time, mean_stacked, linestyle='-', marker='o', markersize=1, color='C0', label='Mean')
 plt.fill_between(center_time, mean_stacked - std_stacked, mean_stacked + std_stacked, color='C0', alpha=0.2, label='±1 std')
+plt.plot(center_time, max_stacked, color='C3', alpha=0.6, label='max')
 plt.xlabel('Time relative reconf. peak (s)', fontsize=12)
 plt.ylabel('Uplink latency (ms)', fontsize=12)
 plt.title('Stacked Slots (centered on reconfiguration)', fontsize=14)

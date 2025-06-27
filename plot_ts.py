@@ -3,15 +3,21 @@ import os
 import matplotlib.pyplot as plt
 
 def main():
-    # Get filename from user input or command line
-    if len(sys.argv) > 1:
+
+    input_folder = "results_client"
+
+    series_number = "1"
+    if len(sys.argv) == 2:
         exp_number = sys.argv[1]
+    elif len(sys.argv) == 3:
+        exp_number = sys.argv[1]
+        series_number = sys.argv[2]
     else:
-        exp_number = input("Enter experiment number: ")
+        exp_number = input("Enter experiment number: ").strip()
+        series_number = input("Enter series number: ").strip()
 
-    filename = f"series_{exp_number}_processed.csv"
-
-    processed_filename = os.path.join("results_client", "exp_" + exp_number , filename)
+    filename = f"series_{series_number}_processed.csv"
+    processed_filename = os.path.join(input_folder, "exp_" + exp_number , filename)
 
     sender_sent_at_relative = []
     receiver_sent_at_relative = []
