@@ -5,7 +5,7 @@ import os
 import sys
 from scipy.signal import find_peaks
 
-# --- Argument parsing for experiment number ---
+# --- Argument parsing for experiment and series number ---
 input_folder = "results_client"
 
 series_number = "1"
@@ -25,7 +25,6 @@ processed_file_path = os.path.join(input_folder, "exp_" + exp_number, filename)
 df = pd.read_csv(processed_file_path)
 t = df["sent_at"].values / 1000.0  # convert ms to seconds
 signal = df["sender_to_receiver"].values
-# signal = df["receiver_to_sender"].values
 
 # --- Autocorrelation to estimate period ---
 signal_demean = signal - np.mean(signal)
