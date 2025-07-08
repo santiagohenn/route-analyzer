@@ -11,6 +11,6 @@ do
     echo "Run $i of $REPEAT at $(date)"
     ./run_server.sh
     if [ $i -lt $REPEAT ]; then
-        sleep SLEEP_FOR_MINUTES * 60 
+        sleep $((SLEEP_FOR_MINUTES * 60))
     fi
 done
