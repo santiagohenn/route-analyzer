@@ -33,7 +33,7 @@ autocorr = np.correlate(signal_demean, signal_demean, mode='full')
 autocorr = autocorr[autocorr.size // 2:]  # keep only positive lags
 
 lags = np.arange(len(autocorr)) * np.median(np.diff(t))
-peaks, _ = find_peaks(autocorr[1:], height=np.mean(autocorr[1:]) + 6 * np.std(signal), distance=1000)
+peaks, _ = find_peaks(autocorr[1:], height=np.mean(autocorr[1:]) + 4 * np.std(signal), distance=1000)
 if len(peaks) > 0:
     period_idx = peaks[0] + 1
     estimated_period = lags[period_idx]
@@ -44,12 +44,15 @@ else:
 estimated_period = 15
 
 print(f"Estimated period: {estimated_period:.2f} seconds")
+print(f"Peaks detected: {len(peaks)}")
 
 # --- Slotting ---
 slot_length = int(round(estimated_period / np.median(np.diff(t))))
 print(f"Slot length in samples: {slot_length}")
 n_slots = len(signal) // slot_length
 slots = [signal[i*slot_length:(i+1)*slot_length] for i in range(n_slots) if len(signal[i*slot_length:(i+1)*slot_length]) == slot_length]
+
+print(f"Number of slots with peaks: {len(slots)}")
 
 # --- Stack windows centered on the peak of each slot ---
 W = 350  # points before and after the peak (window size = 2*W+1)
@@ -79,6 +82,8 @@ for i, slot in enumerate(slots):
     if before_peak_idx < 0:
         continue
     gap = slot[peak_idx] - slot[before_peak_idx]
+    if gap < 20: # Ignore gaps that are too small
+        continue
     gaps.append(gap)
 
 mean_stacked = np.mean(stacked, axis=0)

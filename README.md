@@ -165,7 +165,9 @@ Type --help as arg on server/client to get information on configurations. These 
 I made some simple `plot_ts.py` and `plot_fft.py` scripts to analyze and visualize the collected data. Run `process_dataset.py` before plotting to transform the packets .csv files into .csv time series:
 
 ```bash
-python process_dataset.py <EXPERIMENT_NUMBER>
+python process.py <EXPERIMENT_NUMBER> <EXPERIMENT_SERIES>
+python plot_ts.py <EXPERIMENT_NUMBER> <EXPERIMENT_SERIES>
+python analyze_ac.py <EXPERIMENT_NUMBER> <EXPERIMENT_SERIES>
 ```
 
 ---
