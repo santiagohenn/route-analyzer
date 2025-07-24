@@ -28,6 +28,7 @@ def process_file(exp_number, series_number):
         lines = f.readlines()
         if len(lines) > 0:
             experiment_starts_at = float(lines[0].split(',')[1])
+            print(f"Experiment starts at: {experiment_starts_at}")
         f.seek(0)
 
         for line in f:

@@ -67,6 +67,10 @@ $$
 All timestamps are in nanoseconds. 
 
 [UPDATE] Packets are still sent as pipe separated values, but on the client side they're now stored in .csv format.
+[WARNING] Google's VM appears to crash chrony every few days. I don't know why. Be sure to restart chrony to fix this issue:
+```bash
+sudo systemctl restart chrony
+```
 
 ---
 
