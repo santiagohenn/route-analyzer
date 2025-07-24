@@ -55,7 +55,7 @@ slots = [signal[i*slot_length:(i+1)*slot_length] for i in range(n_slots) if len(
 print(f"Number of slots with peaks: {len(slots)}")
 
 # --- Stack windows centered on the peak of each slot ---
-W = 350  # points before and after the peak (window size = 2*W+1)
+W = 150  # points before and after the peak (window size = 2*W+1)
 stacked = []
 for slot in slots:
     peak_idx = np.argmax(slot)

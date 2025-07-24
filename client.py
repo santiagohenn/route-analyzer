@@ -155,7 +155,7 @@ class UDPClient:
                 self.sock.sendto(payload.encode('utf-8'), (self.server_host, self.server_port))
                 self.packets_sent += 1
                 
-                if seq % 100 == 0:
+                if seq % 500 == 0:
                     print(f"Sent {seq} packets")
                 
                 time.sleep(self.send_interval)
